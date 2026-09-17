@@ -1,0 +1,8 @@
+patient_id,date,medication,glucose,blood_pressure,heart_rate
+P001,2024-01-01,none,9.1,148/92,84
+P001,2024-02-01,none,8.8,145/90,82
+P001,2024-03-01,none,9.0,150/94,85
+P001,2024-04-01,Metformin,8.6,146/91,83
+P001,2024-05-01,Metformin,8.2,142/89,81
+P001,2024-06-01,Metformin,7.8,139/87,80
+P001,2024-07-01,Metformin,7.9,141/88,82
