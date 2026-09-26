@@ -6,18 +6,29 @@ def glucose_visualizer(results):
         patient = results[patient_id] #ger mig tillgång till datasettet för unika patient
         dates = patient['dates']
         glucose = patient['glucose']
+        medication_start = patient['medication_start']
 
-        # varje patient får sin egen graph
-        plt.figure()
-        plt.title(f'Glucose levels - {patient_id}')
-        plt.xlabel('Date')
-        plt.ylabel('Glucose (mmol/L)')
+        # varje patient får sin egen graph i ROSA :)
+        plt.figure(facecolor = '#FCE4EC')
+        plt.gca().set_facecolor('#FFF5F8')
+
+
+        plt.title(f'Glucose levels - {patient_id}', fontweight='bold', color='#E91E63')
+        plt.xlabel('Date', fontweight='bold', color='#E91E63')
+        plt.ylabel('Glucose (mmol/L)', fontweight='bold', color='#E91E63')
 
         # avrundar och formaterar glukos värde till 1 decimaltecken i graph
         plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
 
-        plt.plot(dates, glucose) #skapar xy axis för varje patient
-        plt.grid() #lägger till gridd för lättare avläsning
+        plt.plot(dates, glucose, color='#E91E63') #skapar xy axis för varje patient i rosa :)
+        plt.axvline(
+            medication_start,
+            color='#E91E63',                #lägger till en vertikal indikatorn för medicinstart
+            linestyle='--',
+            label='Medication started'
+        )
+        plt.legend()
+        plt.grid(alpha=0.3) #lägger till gridd för lättare avläsning och gör den litte mindre synlig
         plt.xticks(rotation=45) # roterar datum för att det ska bli lättare att avläsa
         plt.tight_layout() # formatterar graph så allt får plats
 

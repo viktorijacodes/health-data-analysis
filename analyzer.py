@@ -12,12 +12,14 @@ def analyze_glucose(data):
             medicated_glucose = []
             dates = []
             glucose = []
+            medication_start = None
 
             patients[patient_id] = {
                 'unmedicated' : unmedicated_glucose,
                 'medicated' : medicated_glucose,
                 'dates' : dates,
-                'glucose' : glucose
+                'glucose' : glucose,
+                'medication_start' : medication_start
             }
 
 
@@ -28,6 +30,9 @@ def analyze_glucose(data):
         # lägger till i loopet för att använda för graph
         patients[patient_id]['dates'].append(row['date'])
         patients[patient_id]['glucose'].append(float(row['glucose']))
+
+        if row['medication'] != 'none' and patients[patient_id]['medication_start'] is None:
+            patients[patient_id]['medication_start'] = row['date']
 
     #sparar all resultat i en dict som jag fått från loopet
     results = {}
@@ -57,7 +62,8 @@ def analyze_glucose(data):
             'difference': diff_glucose,
             'change' : change,
             'dates': current_patient_data['dates'],
-            'glucose': current_patient_data['glucose']
+            'glucose': current_patient_data['glucose'],
+            'medication_start': current_patient_data['medication_start']
         }
 
     return results
