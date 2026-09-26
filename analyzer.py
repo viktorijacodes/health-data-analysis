@@ -67,11 +67,70 @@ def analyze_glucose(data):
         }
 
     return results
+
+
+
+
+def analyze_pulse(data):
+    patients = {}
+    for row in data: 
+        patient_id = row['patient_id'] # patient id changes depending on row in the loop
+
+        if patient_id not in patients: # using not in because several rows/datapoints for the same patient
+                    unmedicated_pulse = []
+                    medicated_pulse = []
+                    dates = []
+                    pulse = []
+                    medication_start = None
+        
+                    patients[patient_id] = {
+                        'unmedicated' : unmedicated_pulse,
+                        'medicated' : medicated_pulse,
+                        'dates' : dates,
+                        'pulse' : pulse,
+                        'medication_start' : medication_start
+                    }
+
+        if row['medication'] == 'none':
+            patients[patient_id]['unmedicated'].append(float(row['heart_rate']))
+        else:
+            patients[patient_id]['medicated'].append(float(row['heart_rate']))
+
+        patients[patient_id]['dates'].append(row['date'])
+        patients[patient_id]['pulse'].append(float(row['heart_rate']))
+
+        if row['medication'] != 'none' and patients[patient_id]['medication_start'] is None:
+                    patients[patient_id]['medication_start'] = row['date']
+
+    results = {}
     
-
-
-
-
+    for patient_id in patients:
+        current_patient_data = patients[patient_id]
+        unmedicated_pulse = current_patient_data['unmedicated']
+        medicated_pulse = current_patient_data['medicated']
     
+    
+        unmedicated_pulse_avg = sum(unmedicated_pulse) / len(unmedicated_pulse)
+        medicated_pulse_avg = sum(medicated_pulse) / len(medicated_pulse)
+        diff_pulse = unmedicated_pulse_avg - medicated_pulse_avg
+    
+    
+        if diff_pulse > 0:
+            change = "decreased"
+        elif diff_pulse < 0:
+            change = "increased"
+        else:
+            change = "no change"
+    
+        results[patient_id] = {
+            'unmedicated_avg': unmedicated_pulse_avg,
+            'medicated_avg': medicated_pulse_avg,
+            'difference': diff_pulse,
+            'change' : change,
+            'dates': current_patient_data['dates'],
+            'pulse': current_patient_data['pulse'],
+            'medication_start': current_patient_data['medication_start']
+        }
 
+    return results
 
