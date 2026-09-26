@@ -20,7 +20,7 @@ def glucose_visualizer(results):
         # avrundar och formaterar glukos värde till 1 decimaltecken i graph
         plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
 
-        plt.plot(dates, glucose, color='#E91E63') #skapar xy axis för varje patient i rosa :)
+        plt.plot(dates, glucose, color='#E91E63',  marker='o') #skapar xy axis för varje patient i rosa :)
         plt.axvline(
             medication_start,
             color='#E91E63',                #lägger till en vertikal indikatorn för medicinstart
