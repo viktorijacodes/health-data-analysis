@@ -11,3 +11,4 @@ for patient_id in results:
     print(f'Average before medication: {round(patient["unmedicated_avg"], 2)} mmol/L')
     print(f'Average after medication: {round(patient["medicated_avg"], 2)} mmol/L')
     print(f'Difference in glucose levels: {round(patient["difference"], 2)} mmol/L')
+    print(f'Glucose change: {patient["change"]}')

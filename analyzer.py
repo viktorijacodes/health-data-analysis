@@ -34,10 +34,20 @@ def analyze_glucose(data):
         medicated_glucose_avg = sum(medicated_glucose) / len(medicated_glucose)
         diff_glucose = unmedicated_glucose_avg - medicated_glucose_avg
 
+
+        if diff_glucose > 0:
+            change = "decreased"
+        elif diff_glucose < 0:
+            change = "increased"
+        else:
+            change = "no change"
+
+
         results[patient_id] = {
             'unmedicated_avg': unmedicated_glucose_avg,
             'medicated_avg': medicated_glucose_avg,
-            'difference': diff_glucose
+            'difference': diff_glucose,
+            'change' : change
         }
 
     return results
@@ -47,19 +57,5 @@ def analyze_glucose(data):
 
 
     
-
-
-    
-
-'''
-def analyze_blood_pressure(data):
-    unmedicated_systolic = []
-    unmedicated_diastolic = []
-    medicated_systolic = []
-    medicated_diastolic = []
-
-    for row in data:
-        if row in data:
-'''
 
 
