@@ -10,10 +10,14 @@ def analyze_glucose(data):
         if patient_id not in patients: # using not in because several rows/datapoints for the same patient
             unmedicated_glucose = []
             medicated_glucose = []
+            dates = []
+            glucose = []
 
             patients[patient_id] = {
                 'unmedicated' : unmedicated_glucose,
-                'medicated' : medicated_glucose
+                'medicated' : medicated_glucose,
+                'dates' : dates,
+                'glucose' : glucose
             }
 
 
@@ -21,7 +25,11 @@ def analyze_glucose(data):
             patients[patient_id]['unmedicated'].append(float(row['glucose']))
         else:
             patients[patient_id]['medicated'].append(float(row['glucose']))
+        # lägger till i loopet för att använda för graph
+        patients[patient_id]['dates'].append(row['date'])
+        patients[patient_id]['glucose'].append(float(row['glucose']))
 
+    #sparar all resultat i en dict som jag fått från loopet
     results = {}
 
     for patient_id in patients:
@@ -47,7 +55,9 @@ def analyze_glucose(data):
             'unmedicated_avg': unmedicated_glucose_avg,
             'medicated_avg': medicated_glucose_avg,
             'difference': diff_glucose,
-            'change' : change
+            'change' : change,
+            'dates': current_patient_data['dates'],
+            'glucose': current_patient_data['glucose']
         }
 
     return results

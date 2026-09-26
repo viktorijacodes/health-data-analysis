@@ -1,5 +1,6 @@
 from data_loader import load_data
 from analyzer import analyze_glucose
+from visualizer import glucose_visualizer
 
 loaded_patient_data = load_data("data/patient_data.csv")
 results = analyze_glucose(loaded_patient_data)
@@ -12,3 +13,6 @@ for patient_id in results:
     print(f'Average after medication: {round(patient["medicated_avg"], 2)} mmol/L')
     print(f'Difference in glucose levels: {round(patient["difference"], 2)} mmol/L')
     print(f'Glucose change: {patient["change"]}')
+
+
+glucose_visualizer(results)
