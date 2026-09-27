@@ -1,6 +1,6 @@
 from data_loader import load_data
 from analyzer import analyze_glucose, analyze_pulse
-from visualizer import glucose_visualizer
+from visualizer import glucose_visualizer, pulse_visualizer
 
 loaded_patient_data = load_data("data/patient_data.csv")
 results = analyze_glucose(loaded_patient_data)
@@ -26,3 +26,4 @@ for patient_id in pulse_results:
 
 
 glucose_visualizer(results)
+pulse_visualizer(pulse_results)
