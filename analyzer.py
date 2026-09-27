@@ -7,6 +7,9 @@ class Patient:
         self.medication_start = None
         self.unmedicated_glucose = []
         self.medicated_glucose = []
+        self.unmedicated_pulse = []
+        self.medicated_pulse = []
+
 
     def calculate_glucose_results(self):
         unmedicated_glucose_avg = sum(self.unmedicated_glucose) / len(self.unmedicated_glucose)
@@ -27,7 +30,27 @@ class Patient:
             'difference': diff_glucose,
             'change': change
         }
+
+    def calculate_pulse_results(self):
+        unmedicated_pulse_avg = sum(self.unmedicated_pulse) / len(self.unmedicated_pulse)
+        medicated_pulse_avg = sum(self.medicated_pulse) / len(self.medicated_pulse)
          
+        diff_pulse = unmedicated_pulse_avg - medicated_pulse_avg
+
+        if diff_pulse > 0:
+            change = "decreased"
+        elif diff_pulse < 0:
+            change = "increased"
+        else:
+            change = "no change"
+
+
+        return {
+        'unmedicated_avg': unmedicated_pulse_avg,
+        'medicated_avg': medicated_pulse_avg,
+        'difference': diff_pulse,
+        'change': change
+        }
 
 
 
@@ -79,66 +102,47 @@ def analyze_glucose(data):
 
 
 
-
 def analyze_pulse(data):
     patients = {}
     for row in data: 
         patient_id = row['patient_id'] # patient id changes depending on row in the loop
 
         if patient_id not in patients: # using not in because several rows/datapoints for the same patient
-                    unmedicated_pulse = []
-                    medicated_pulse = []
-                    dates = []
-                    pulse = []
-                    medication_start = None
+            patient = Patient(patient_id)
+            patients[patient_id] = patient
+
+        patient = patients[patient_id]
         
-                    patients[patient_id] = {
-                        'unmedicated' : unmedicated_pulse,
-                        'medicated' : medicated_pulse,
-                        'dates' : dates,
-                        'pulse' : pulse,
-                        'medication_start' : medication_start
-                    }
 
         if row['medication'] == 'none':
-            patients[patient_id]['unmedicated'].append(float(row['heart_rate']))
+            patient.unmedicated_pulse.append(float(row['heart_rate']))
         else:
-            patients[patient_id]['medicated'].append(float(row['heart_rate']))
+            patient.medicated_pulse.append(float(row['heart_rate']))
 
-        patients[patient_id]['dates'].append(row['date'])
-        patients[patient_id]['pulse'].append(float(row['heart_rate']))
+        patient.dates.append(row['date'])
+        patient.pulse.append(float(row['heart_rate']))
 
-        if row['medication'] != 'none' and patients[patient_id]['medication_start'] is None:
-                    patients[patient_id]['medication_start'] = row['date']
+        if row['medication'] != 'none' and patient.medication_start is None:
+                    patient.medication_start = row['date']
 
     results = {}
     
     for patient_id in patients:
         current_patient_data = patients[patient_id]
-        unmedicated_pulse = current_patient_data['unmedicated']
-        medicated_pulse = current_patient_data['medicated']
+        unmedicated_pulse = current_patient_data.unmedicated_pulse
+        medicated_pulse = current_patient_data.medicated_pulse
     
-    
-        unmedicated_pulse_avg = sum(unmedicated_pulse) / len(unmedicated_pulse)
-        medicated_pulse_avg = sum(medicated_pulse) / len(medicated_pulse)
-        diff_pulse = unmedicated_pulse_avg - medicated_pulse_avg
-    
-    
-        if diff_pulse > 0:
-            change = "decreased"
-        elif diff_pulse < 0:
-            change = "increased"
-        else:
-            change = "no change"
+        pulse_results = current_patient_data.calculate_pulse_results()
+       
     
         results[patient_id] = {
-            'unmedicated_avg': unmedicated_pulse_avg,
-            'medicated_avg': medicated_pulse_avg,
-            'difference': diff_pulse,
-            'change' : change,
-            'dates': current_patient_data['dates'],
-            'pulse': current_patient_data['pulse'],
-            'medication_start': current_patient_data['medication_start']
+            'unmedicated_avg': pulse_results['unmedicated_avg'],
+            'medicated_avg': pulse_results['medicated_avg'],
+            'difference': pulse_results['difference'],
+            'change' : pulse_results['change'],
+            'dates': current_patient_data.dates,
+            'pulse': current_patient_data.pulse,
+            'medication_start': current_patient_data.medication_start
         }
 
     return results
