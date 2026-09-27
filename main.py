@@ -6,10 +6,21 @@ loaded_patient_data = load_data("data/patient_data.csv")
 results = analyze_glucose(loaded_patient_data)
 pulse_results = analyze_pulse(loaded_patient_data)
 
-for patient_id in results:
-    patient = results[patient_id]
+selected_patient_id = input('Which patient do you want to see?(P001-P006): ')
 
-    print(f'Glukos - Patient: {patient_id}')
+if selected_patient_id in results:
+    selected_patient = results[selected_patient_id]
+    selected_measurement = "glucose"
+
+elif selected_patient_id in pulse_results:
+    selected_patient = pulse_results[selected_patient_id]
+    selected_measurement = "pulse"
+
+
+for current_patient_id in results:
+    patient = results[current_patient_id]
+
+    print(f'Glukos - Patient: {current_patient_id}')
     print(f'Average before medication: {round(patient["unmedicated_avg"], 2)} mmol/L')
     print(f'Average after medication: {round(patient["medicated_avg"], 2)} mmol/L')
     print(f'Difference in glucose levels: {round(patient["difference"], 2)} mmol/L')
@@ -25,5 +36,8 @@ for patient_id in pulse_results:
     print(f'Pulse change: {patient["change"]}')
 
 
-glucose_visualizer(results)
-pulse_visualizer(pulse_results)
+if selected_measurement == "glucose":
+    glucose_visualizer({selected_patient_id: selected_patient})
+
+elif selected_measurement == "pulse":
+    pulse_visualizer({selected_patient_id: selected_patient})

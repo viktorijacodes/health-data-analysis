@@ -1,3 +1,8 @@
+diabetes_meds = ["Metformin"]
+
+heart_meds = ["Enalapril", "Metoprolol"]
+
+
 class Patient:
     def __init__(self, patient_id):
         self.patient_id = patient_id
@@ -67,11 +72,14 @@ def analyze_glucose(data):
             patient = Patient(patient_id)
             patients[patient_id] = patient
 
+        patient = patients[patient_id]
+
 
         if row['medication'] == 'none': # if the row containts 'none' in medication, adds glucose levels from that row to unmedicated glucose in the particular patients ''box''
             patient.unmedicated_glucose.append(float(row['glucose']))
-        else:
-            patient.medicated_glucose.append(float(row['glucose']))
+        elif row['medication'] in diabetes_meds:
+            patient.medicated_glucose.append(float(row['glucose'])) #if row contains meds and is part of diabetes meds list, adds it to meds
+
         # lägger till i loopet för att använda för graph
         patient.dates.append(row['date'])
         patient.glucose.append(float(row['glucose']))
@@ -85,18 +93,19 @@ def analyze_glucose(data):
     for patient_id in patients:
         current_patient_data = patients[patient_id]
 
-        glucose_results = current_patient_data.calculate_glucose_results()
+        if current_patient_data.medicated_glucose:
+            glucose_results = current_patient_data.calculate_glucose_results()
 
 
-        results[patient_id] = {
-            'unmedicated_avg': glucose_results['unmedicated_avg'],
-            'medicated_avg': glucose_results['medicated_avg'],
-            'difference': glucose_results['difference'],
-            'change' : glucose_results['change'],
-            'dates': current_patient_data.dates,
-            'glucose': current_patient_data.glucose,
-            'medication_start': current_patient_data.medication_start
-        }
+            results[patient_id] = {
+                'unmedicated_avg': glucose_results['unmedicated_avg'],
+                'medicated_avg': glucose_results['medicated_avg'],
+                'difference': glucose_results['difference'],
+                'change' : glucose_results['change'],
+                'dates': current_patient_data.dates,
+                'glucose': current_patient_data.glucose,
+                'medication_start': current_patient_data.medication_start
+            }
 
     return results
 
@@ -116,7 +125,7 @@ def analyze_pulse(data):
 
         if row['medication'] == 'none':
             patient.unmedicated_pulse.append(float(row['heart_rate']))
-        else:
+        elif row['medication'] in heart_meds:
             patient.medicated_pulse.append(float(row['heart_rate']))
 
         patient.dates.append(row['date'])
@@ -129,21 +138,19 @@ def analyze_pulse(data):
     
     for patient_id in patients:
         current_patient_data = patients[patient_id]
-        unmedicated_pulse = current_patient_data.unmedicated_pulse
-        medicated_pulse = current_patient_data.medicated_pulse
-    
-        pulse_results = current_patient_data.calculate_pulse_results()
+
+        if current_patient_data.medicated_pulse:
+            pulse_results = current_patient_data.calculate_pulse_results()
        
-    
-        results[patient_id] = {
-            'unmedicated_avg': pulse_results['unmedicated_avg'],
-            'medicated_avg': pulse_results['medicated_avg'],
-            'difference': pulse_results['difference'],
-            'change' : pulse_results['change'],
-            'dates': current_patient_data.dates,
-            'pulse': current_patient_data.pulse,
-            'medication_start': current_patient_data.medication_start
-        }
+            results[patient_id] = {
+                'unmedicated_avg': pulse_results['unmedicated_avg'],
+                'medicated_avg': pulse_results['medicated_avg'],
+                'difference': pulse_results['difference'],
+                'change' : pulse_results['change'],
+                'dates': current_patient_data.dates,
+                'pulse': current_patient_data.pulse,
+                'medication_start': current_patient_data.medication_start
+            }
 
     return results
 
