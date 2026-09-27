@@ -1,3 +1,19 @@
+class Patient:
+    def __init__(self, patient_id):
+        self.patient_id = patient_id
+        self.dates = []
+        self.glucose = []
+        self.pulse = []
+        self.medication_start = None
+        self.unmedicated_glucose = []
+        self.medicated_glucose = []
+
+         
+
+
+
+
+
 def analyze_glucose(data):
     # organizing data by patient with dict
     patients = {}
@@ -7,40 +23,29 @@ def analyze_glucose(data):
         patient_id = row['patient_id'] # patient id changes depending on row in the loop
 
 
-        if patient_id not in patients: # using not in because several rows/datapoints for the same patient
-            unmedicated_glucose = []
-            medicated_glucose = []
-            dates = []
-            glucose = []
-            medication_start = None
-
-            patients[patient_id] = {
-                'unmedicated' : unmedicated_glucose,
-                'medicated' : medicated_glucose,
-                'dates' : dates,
-                'glucose' : glucose,
-                'medication_start' : medication_start
-            }
+        if patient_id not in patients:# using not in because several rows/datapoints for the same patient
+            patient = Patient(patient_id)
+            patients[patient_id] = patient
 
 
         if row['medication'] == 'none': # if the row containts 'none' in medication, adds glucose levels from that row to unmedicated glucose in the particular patients ''box''
-            patients[patient_id]['unmedicated'].append(float(row['glucose']))
+            patient.unmedicated_glucose.append(float(row['glucose']))
         else:
-            patients[patient_id]['medicated'].append(float(row['glucose']))
+            patient.medicated_glucose.append(float(row['glucose']))
         # lägger till i loopet för att använda för graph
-        patients[patient_id]['dates'].append(row['date'])
-        patients[patient_id]['glucose'].append(float(row['glucose']))
+        patient.dates.append(row['date'])
+        patient.glucose.append(float(row['glucose']))
 
-        if row['medication'] != 'none' and patients[patient_id]['medication_start'] is None:
-            patients[patient_id]['medication_start'] = row['date']
+        if row['medication'] != 'none' and patient.medication_start is None:
+            patient.medication_start = row['date']
 
     #sparar all resultat i en dict som jag fått från loopet
     results = {}
 
     for patient_id in patients:
         current_patient_data = patients[patient_id]
-        unmedicated_glucose = current_patient_data['unmedicated']
-        medicated_glucose = current_patient_data['medicated']
+        unmedicated_glucose = current_patient_data.unmedicated_glucose
+        medicated_glucose = current_patient_data.medicated_glucose
 
 
         unmedicated_glucose_avg = sum(unmedicated_glucose) / len(unmedicated_glucose)
@@ -61,9 +66,9 @@ def analyze_glucose(data):
             'medicated_avg': medicated_glucose_avg,
             'difference': diff_glucose,
             'change' : change,
-            'dates': current_patient_data['dates'],
-            'glucose': current_patient_data['glucose'],
-            'medication_start': current_patient_data['medication_start']
+            'dates': current_patient_data.dates,
+            'glucose': current_patient_data.glucose,
+            'medication_start': current_patient_data.medication_start
         }
 
     return results
