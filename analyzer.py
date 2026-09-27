@@ -8,9 +8,26 @@ class Patient:
         self.unmedicated_glucose = []
         self.medicated_glucose = []
 
+    def calculate_glucose_results(self):
+        unmedicated_glucose_avg = sum(self.unmedicated_glucose) / len(self.unmedicated_glucose)
+        medicated_glucose_avg = sum(self.medicated_glucose) / len(self.medicated_glucose)
+
+        diff_glucose = unmedicated_glucose_avg - medicated_glucose_avg
+
+        if diff_glucose > 0:
+            change = "decreased"
+        elif diff_glucose < 0:
+            change = "increased"
+        else:
+            change = "no change"
+
+        return {
+            'unmedicated_avg': unmedicated_glucose_avg,
+            'medicated_avg': medicated_glucose_avg,
+            'difference': diff_glucose,
+            'change': change
+        }
          
-
-
 
 
 
@@ -44,28 +61,15 @@ def analyze_glucose(data):
 
     for patient_id in patients:
         current_patient_data = patients[patient_id]
-        unmedicated_glucose = current_patient_data.unmedicated_glucose
-        medicated_glucose = current_patient_data.medicated_glucose
 
-
-        unmedicated_glucose_avg = sum(unmedicated_glucose) / len(unmedicated_glucose)
-        medicated_glucose_avg = sum(medicated_glucose) / len(medicated_glucose)
-        diff_glucose = unmedicated_glucose_avg - medicated_glucose_avg
-
-
-        if diff_glucose > 0:
-            change = "decreased"
-        elif diff_glucose < 0:
-            change = "increased"
-        else:
-            change = "no change"
+        glucose_results = current_patient_data.calculate_glucose_results()
 
 
         results[patient_id] = {
-            'unmedicated_avg': unmedicated_glucose_avg,
-            'medicated_avg': medicated_glucose_avg,
-            'difference': diff_glucose,
-            'change' : change,
+            'unmedicated_avg': glucose_results['unmedicated_avg'],
+            'medicated_avg': glucose_results['medicated_avg'],
+            'difference': glucose_results['difference'],
+            'change' : glucose_results['change'],
             'dates': current_patient_data.dates,
             'glucose': current_patient_data.glucose,
             'medication_start': current_patient_data.medication_start
