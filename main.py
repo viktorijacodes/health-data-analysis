@@ -2,10 +2,14 @@ from data_loader import load_data
 from analyzer import analyze_glucose, analyze_pulse
 from visualizer import glucose_visualizer, pulse_visualizer
 
+
+# Laddar och analyserar patientdata
 loaded_patient_data = load_data('data/patient_data.csv')
 results = analyze_glucose(loaded_patient_data)
 pulse_results = analyze_pulse(loaded_patient_data)
 
+
+# frågar efter en giltig patient id tills ett anges
 valid_patient = False
 
 while not valid_patient:
@@ -28,12 +32,7 @@ while not valid_patient:
         print('Invalid Patient ID, try again.')
 
 
-
-
-
-
-
-
+# visar resultat och graph för den valda patienten
 if selected_measurement == 'glucose':
     print(
         f'Patient: {selected_patient_id}'

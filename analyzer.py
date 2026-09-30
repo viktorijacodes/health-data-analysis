@@ -1,8 +1,9 @@
-diabetes_meds = ["Metformin"]
 
+# listor med medicin som används i analysen
+diabetes_meds = ["Metformin"]
 heart_meds = ["Enalapril", "Metoprolol"]
 
-
+# Parent class med relevanta atributer för alla patienter
 class Patient:
     def __init__(self, patient_id):
         self.patient_id = patient_id
@@ -10,7 +11,7 @@ class Patient:
         self.medication_start = None
         
 
-
+# Child class för analys av glukos
 class DiabetesPatient(Patient):
     def __init__(self, patient_id):
         super().__init__(patient_id)
@@ -18,6 +19,7 @@ class DiabetesPatient(Patient):
         self.unmedicated_glucose = []
         self.medicated_glucose = []
 
+    # beräknar skillnaden mellan glukos före och efter medicinering
     def calculate_glucose_results(self):
         unmedicated_glucose_avg = sum(self.unmedicated_glucose) / len(self.unmedicated_glucose)
         medicated_glucose_avg = sum(self.medicated_glucose) / len(self.medicated_glucose)
@@ -37,7 +39,9 @@ class DiabetesPatient(Patient):
             'difference': diff_glucose,
             'change': change
         }
-        
+
+
+# Child class för puls analys
 class HeartPatient(Patient):
     def __init__(self, patient_id):
         super().__init__(patient_id)
@@ -45,6 +49,7 @@ class HeartPatient(Patient):
         self.unmedicated_pulse = []
         self.medicated_pulse = []
 
+    # Beräknar skillnaden mellan puls före och efter medicineringen
     def calculate_pulse_results(self):
         unmedicated_pulse_avg = sum(self.unmedicated_pulse) / len(self.unmedicated_pulse)
         medicated_pulse_avg = sum(self.medicated_pulse) / len(self.medicated_pulse)
@@ -58,7 +63,6 @@ class HeartPatient(Patient):
         else:
             change = "no change"
     
-    
         return {
             'unmedicated_avg': unmedicated_pulse_avg,
             'medicated_avg': medicated_pulse_avg,
@@ -67,37 +71,35 @@ class HeartPatient(Patient):
         }
 
 
-
-
 def analyze_glucose(data):
-    # organizing data by patient with dict
+    # organiserar data efter patient-id
     patients = {}
 
-#for loop konverterar data till dict
     for row in data: 
-        patient_id = row['patient_id'] # patient id changes depending on row in the loop
+        patient_id = row['patient_id']
 
-
-        if patient_id not in patients:# using not in because several rows/datapoints for the same patient
-            patient = DiabetesPatient(patient_id) # retrieving patient data
-            patients[patient_id] = patient # saving patient data
+        if patient_id not in patients:
+            # Skapar ett patientobjekt första gången patient id hittas
+            patient = DiabetesPatient(patient_id) 
+            # Sparar patientobjektet med patient id som nyckel
+            patients[patient_id] = patient 
 
         patient = patients[patient_id]
 
-
-        if row['medication'] == 'none': # if the row containts 'none' in medication, adds glucose levels from that row to unmedicated glucose in the particular patients ''box''
+        # sorterar glukosvärden beroende om patient fått medicin eller inte
+        if row['medication'] == 'none': 
             patient.unmedicated_glucose.append(float(row['glucose']))
         elif row['medication'] in diabetes_meds:
-            patient.medicated_glucose.append(float(row['glucose'])) #if row contains meds and is part of diabetes meds list, adds it to meds
+            patient.medicated_glucose.append(float(row['glucose']))
 
-        # lägger till i loopet för att använda för graph
+        # sparar datum och glukosvärden för visualisering
         patient.dates.append(row['date'])
         patient.glucose.append(float(row['glucose']))
 
         if row['medication'] != 'none' and patient.medication_start is None:
             patient.medication_start = row['date']
 
-    #sparar all resultat i en dict som jag fått från loopet
+    # sparar all resultat i en dict som jag fått från loopet
     results = {}
 
     for patient_id in patients:
@@ -105,7 +107,6 @@ def analyze_glucose(data):
 
         if current_patient_data.medicated_glucose:
             glucose_results = current_patient_data.calculate_glucose_results()
-
 
             results[patient_id] = {
                 'unmedicated_avg': glucose_results['unmedicated_avg'],
@@ -120,21 +121,20 @@ def analyze_glucose(data):
     return results
 
 
-
 def analyze_pulse(data):
+    # Sorterar patientdata efter patient-id
     patients = {}
 
-    # samlar in data
     for row in data: 
-        patient_id = row['patient_id'] # patient id changes depending on row in the loop
+        patient_id = row['patient_id']
 
-        if patient_id not in patients: # using not in because several rows/datapoints for the same patient
+        if patient_id not in patients:
+            # skapar ett patientobjekt första gången patient-id hittas
             patient = HeartPatient(patient_id)
             patients[patient_id] = patient
 
         patient = patients[patient_id]
         
-
         if row['medication'] == 'none':
             patient.unmedicated_pulse.append(float(row['heart_rate']))
         elif row['medication'] in heart_meds:
@@ -144,7 +144,7 @@ def analyze_pulse(data):
         patient.pulse.append(float(row['heart_rate']))
 
         if row['medication'] != 'none' and patient.medication_start is None:
-                    patient.medication_start = row['date']
+            patient.medication_start = row['date']
 
     results = {}
 
@@ -166,4 +166,3 @@ def analyze_pulse(data):
             }
 
     return results
-
