@@ -6,15 +6,32 @@ loaded_patient_data = load_data('data/patient_data.csv')
 results = analyze_glucose(loaded_patient_data)
 pulse_results = analyze_pulse(loaded_patient_data)
 
-selected_patient_id = input('Which patient do you want to see?(P001-P006): ')
+valid_patient = False
 
-if selected_patient_id in results:
-    selected_patient = results[selected_patient_id]
-    selected_measurement = 'glucose'
+while not valid_patient:
+    try:
+        selected_patient_id = input('Which patient do you want to see?(P001-P006): ')
 
-elif selected_patient_id in pulse_results:
-    selected_patient = pulse_results[selected_patient_id]
-    selected_measurement = 'pulse'
+        if selected_patient_id in results:
+            selected_patient = results[selected_patient_id]
+            selected_measurement = 'glucose'
+            valid_patient = True
+
+        elif selected_patient_id in pulse_results:
+            selected_patient = pulse_results[selected_patient_id]
+            selected_measurement = 'pulse'
+            valid_patient = True
+        else:
+            raise ValueError()
+    
+    except ValueError:
+        print('Invalid Patient ID, try again.')
+
+
+
+
+
+
 
 
 if selected_measurement == 'glucose':
