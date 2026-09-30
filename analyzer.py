@@ -7,55 +7,65 @@ class Patient:
     def __init__(self, patient_id):
         self.patient_id = patient_id
         self.dates = []
-        self.glucose = []
-        self.pulse = []
         self.medication_start = None
+        
+
+
+class DiabetesPatient(Patient):
+    def __init__(self, patient_id):
+        super().__init__(patient_id)
+        self.glucose = []
         self.unmedicated_glucose = []
         self.medicated_glucose = []
-        self.unmedicated_pulse = []
-        self.medicated_pulse = []
-
 
     def calculate_glucose_results(self):
         unmedicated_glucose_avg = sum(self.unmedicated_glucose) / len(self.unmedicated_glucose)
         medicated_glucose_avg = sum(self.medicated_glucose) / len(self.medicated_glucose)
-
+        
         diff_glucose = unmedicated_glucose_avg - medicated_glucose_avg
-
+        
         if diff_glucose > 0:
             change = "decreased"
         elif diff_glucose < 0:
             change = "increased"
         else:
             change = "no change"
-
+        
         return {
             'unmedicated_avg': unmedicated_glucose_avg,
             'medicated_avg': medicated_glucose_avg,
             'difference': diff_glucose,
             'change': change
         }
+        
+class HeartPatient(Patient):
+    def __init__(self, patient_id):
+        super().__init__(patient_id)
+        self.pulse = []
+        self.unmedicated_pulse = []
+        self.medicated_pulse = []
 
     def calculate_pulse_results(self):
         unmedicated_pulse_avg = sum(self.unmedicated_pulse) / len(self.unmedicated_pulse)
         medicated_pulse_avg = sum(self.medicated_pulse) / len(self.medicated_pulse)
-         
+             
         diff_pulse = unmedicated_pulse_avg - medicated_pulse_avg
-
+    
         if diff_pulse > 0:
             change = "decreased"
         elif diff_pulse < 0:
             change = "increased"
         else:
             change = "no change"
-
-
+    
+    
         return {
-        'unmedicated_avg': unmedicated_pulse_avg,
-        'medicated_avg': medicated_pulse_avg,
-        'difference': diff_pulse,
-        'change': change
+            'unmedicated_avg': unmedicated_pulse_avg,
+            'medicated_avg': medicated_pulse_avg,
+            'difference': diff_pulse,
+            'change': change
         }
+
 
 
 
@@ -69,8 +79,8 @@ def analyze_glucose(data):
 
 
         if patient_id not in patients:# using not in because several rows/datapoints for the same patient
-            patient = Patient(patient_id)
-            patients[patient_id] = patient
+            patient = DiabetesPatient(patient_id) # retrieving patient data
+            patients[patient_id] = patient # saving patient data
 
         patient = patients[patient_id]
 
@@ -113,11 +123,13 @@ def analyze_glucose(data):
 
 def analyze_pulse(data):
     patients = {}
+
+    # samlar in data
     for row in data: 
         patient_id = row['patient_id'] # patient id changes depending on row in the loop
 
         if patient_id not in patients: # using not in because several rows/datapoints for the same patient
-            patient = Patient(patient_id)
+            patient = HeartPatient(patient_id)
             patients[patient_id] = patient
 
         patient = patients[patient_id]
@@ -135,7 +147,8 @@ def analyze_pulse(data):
                     patient.medication_start = row['date']
 
     results = {}
-    
+
+    # organizerar och analyserar data
     for patient_id in patients:
         current_patient_data = patients[patient_id]
 
